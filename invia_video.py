@@ -8,6 +8,7 @@ Prova senza inviare nulla:  PROVA=1 python invia_video.py
 import html
 import json
 import os
+import re
 import time
 import urllib.request
 
@@ -65,6 +66,16 @@ def scarica_logo(token, chat_id, percorso):
         print("Logo non trovato, uso lo sfondo di riserva:", e)
 
 
+def pulisci_token(t):
+    """Toglie spazi, virgolette e un eventuale 'bot' davanti, e stampa un controllo (senza mostrare il token)."""
+    t = (t or "").strip().strip('"').strip("'").strip()
+    if t.lower().startswith("bot") and t[3:4].isdigit():
+        t = t[3:]
+    ok = bool(re.fullmatch(r"\d+:[A-Za-z0-9_-]{30,}", t))
+    print(f"Controllo token: lunghezza {len(t)}, formato corretto: {'sì' if ok else 'NO'}")
+    return t
+
+
 def didascalia(o):
     sconto = round((1 - o["prezzo_scontato"] / o["prezzo_originale"]) * 100)
     titolo = html.escape(o.get("titolo_completo") or o["titolo"], quote=False)
@@ -85,7 +96,7 @@ def main():
     o = scegli_offerta(offerte)
     print("Offerta scelta:", o["titolo"])
 
-    token, chat_id = os.environ.get("BOT_TOKEN"), os.environ.get("CHAT_ID")
+    token, chat_id = pulisci_token(os.environ.get("BOT_TOKEN")), (os.environ.get("CHAT_ID") or "").strip()
     scarica_logo(token, chat_id, os.path.join(QUI, "logo.jpg"))
     foto = scarica_foto(o.get("foto_url"), os.path.join(QUI, "foto_prodotto.jpg"))
     video = crea_video({**o, "foto": foto}, os.path.join(QUI, "offerta.mp4"))
