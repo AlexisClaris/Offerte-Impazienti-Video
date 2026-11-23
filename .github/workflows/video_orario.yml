@@ -16,11 +16,14 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Installa ffmpeg e librerie
+      - name: Installa librerie, ffmpeg e font
         run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq ffmpeg fonts-inter
-          pip install pillow requests
+          pip install pillow requests imageio-ffmpeg
+          mkdir -p fonts
+          curl -sSL --retry 3 -o inter.zip https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip || true
+          unzip -q -o inter.zip -d /tmp/inter 2>/dev/null || true
+          find /tmp/inter -name "Inter-*.otf" -exec cp {} fonts/ \; 2>/dev/null || true
+          ls fonts
 
       - name: Crea e invia il video
         env:
