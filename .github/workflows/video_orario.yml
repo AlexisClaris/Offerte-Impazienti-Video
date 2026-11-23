@@ -1,0 +1,29 @@
+name: Video offerta ogni ora
+
+on:
+  schedule:
+    - cron: "17 * * * *"   # ogni ora al minuto 17 (orario UTC)
+  workflow_dispatch:        # pulsante "Run workflow" per provarlo a mano
+
+jobs:
+  video:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installa ffmpeg e librerie
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg fonts-inter
+          pip install pillow requests
+
+      - name: Crea e invia il video
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+        run: python invia_video.py
