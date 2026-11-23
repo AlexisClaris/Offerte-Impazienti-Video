@@ -1,16 +1,11 @@
 [
   {
-    "titolo": "Compressore portatile per auto 150 PSI",
-    "prezzo_originale": 49.99,
-    "prezzo_scontato": 29.99,
-    "foto_url": "",
-    "link": "https://www.amazon.it/"
-  },
-  {
-    "titolo": "Esempio: cuffie Bluetooth over-ear",
-    "prezzo_originale": 79.99,
-    "prezzo_scontato": 39.99,
-    "foto_url": "",
-    "link": "https://www.amazon.it/"
+    "titolo": "Tubo da giardino estensibile 30m VOUNOT",
+    "titolo_completo": "VOUNOT® Tubo Irrigazione Estensibile 30m, Tubo Flessibile da Giardino con Pistola a Spruzzo d'Acqua 10 Funzioni, Connettore in Ottone 1/2\" e 3/4\" e Gancio e Organizer Inclusi, Nero",
+    "prezzo_originale": 39.99,
+    "prezzo_scontato": 22.24,
+    "foto_url": "https://m.media-amazon.com/images/I/81kiEAlL6cL._AC_SL1500_.jpg",
+    "link": "https://www.amazon.it/dp/B0B719XTZZ",
+    "hashtag": "#GiardinoEGiardinaggio"
   }
 ]

@@ -5,6 +5,7 @@ crea il video "Offerte Impazienti" e lo pubblica sul canale Telegram.
 Servono due Secrets su GitHub:  BOT_TOKEN  e  CHAT_ID
 Prova senza inviare nulla:  PROVA=1 python invia_video.py
 """
+import html
 import json
 import os
 import time
@@ -59,12 +60,16 @@ def scarica_logo(token, chat_id, percorso):
 
 def didascalia(o):
     sconto = round((1 - o["prezzo_scontato"] / o["prezzo_originale"]) * 100)
-    return (
-        f"🔥 <b>{o['titolo']}</b>\n\n"
+    titolo = html.escape(o.get("titolo_completo") or o["titolo"], quote=False)
+    testo = (
+        f"🔥 <b>{titolo}</b>\n\n"
         f"❌ Prima: <s>{formatta(o['prezzo_originale'])}</s>\n"
         f"✅ Ora: <b>{formatta(o['prezzo_scontato'])}</b>  (-{sconto}%)\n\n"
         f"⚡ Offerte Impazienti"
     )
+    if o.get("hashtag"):
+        testo += f"\n{o['hashtag']}"
+    return testo
 
 
 def main():
