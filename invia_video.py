@@ -16,6 +16,13 @@ import requests
 from video_offerta import crea_video
 
 QUI = os.path.dirname(os.path.abspath(__file__))
+TAG_AMAZON = "alexisclari00-21"   # tag affiliato: viene aggiunto da solo ai link Amazon che non ce l'hanno
+
+
+def link_affiliato(url):
+    if "amazon." in url and "tag=" not in url:
+        url += ("&" if "?" in url else "?") + "tag=" + TAG_AMAZON
+    return url
 
 
 def formatta(prezzo):
@@ -97,7 +104,7 @@ def main():
                 "supports_streaming": "true",
                 "width": 1080,
                 "height": 1920,
-                "reply_markup": json.dumps({"inline_keyboard": [[{"text": "🛒 Acquista Ora", "url": o["link"]}]]}),
+                "reply_markup": json.dumps({"inline_keyboard": [[{"text": "🛒 Acquista Ora", "url": link_affiliato(o["link"])}]]}),
             },
             files={"video": ("offerta.mp4", v, "video/mp4")},
             timeout=120,
