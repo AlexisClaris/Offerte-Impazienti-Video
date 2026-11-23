@@ -40,6 +40,12 @@ W, H, FPS, DURATA = 1080, 1920, 30, 7.0
 
 
 SISTEMA = "/usr/share/fonts/opentype/inter/"   # font Inter installati con: apt-get install fonts-inter
+RISERVA = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+try:  # ffmpeg già pronto installato con pip (imageio-ffmpeg), altrimenti quello di sistema
+    import imageio_ffmpeg
+    FFMPEG = imageio_ffmpeg.get_ffmpeg_exe()
+except Exception:
+    FFMPEG = "ffmpeg"
 
 
 def f(nome, size):
@@ -47,6 +53,10 @@ def f(nome, size):
     if not os.path.exists(path):  # se manca nella cartella fonts, usa quello di sistema
         alt = os.path.join(SISTEMA, os.path.basename(path))
         path = alt if os.path.exists(alt) else os.path.join(SISTEMA, "Inter-Black.otf")
+        if not os.path.exists(path):
+            path = os.path.join(FONT_DIR, "Inter-Black.otf")
+        if not os.path.exists(path):
+            path = RISERVA
     return ImageFont.truetype(path, int(size))
 
 
@@ -246,7 +256,7 @@ def crea_video(p, uscita="offerta.mp4"):
     dbt.text((30 + bw / 2, 30 + bh / 2), BRAND["bottone"] + "  ›", font=f("brand", 58), fill=BRAND["testo_scuro"], anchor="mm")
 
     ff = subprocess.Popen(
-        ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24",
+        [FFMPEG, "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24",
          "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-",
          "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-pix_fmt", "yuv420p",
          "-movflags", "+faststart", uscita], stdin=subprocess.PIPE)
