@@ -118,7 +118,11 @@ def titolo_img(testo, font, larghezza_max):
             righe.append(riga)
             riga = p
     righe.append(riga)
-    righe = righe[:3]
+    if len(righe) > 2:  # massimo 2 righe, altrimenti copre il prezzo
+        righe = righe[:2]
+        while righe[1] and font.getlength(righe[1] + "…") > larghezza_max:
+            righe[1] = righe[1].rsplit(" ", 1)[0] if " " in righe[1] else righe[1][:-1]
+        righe[1] = righe[1].rstrip(" ,-–") + "…"
     h_riga = int(font.size * 1.22)
     img = Image.new("RGBA", (larghezza_max + 40, h_riga * len(righe) + 30), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
@@ -230,11 +234,12 @@ def crea_video(p, uscita="offerta.mp4"):
     scie = scie_luminose()
     testa = intestazione(logo)
     card = foto_prodotto(p.get("foto"), 640)
-    sconto = round((1 - p["prezzo_scontato"] / p["prezzo_originale"]) * 100)
+    pieno = p.get("prezzo_originale")
+    sconto = round((1 - p["prezzo_scontato"] / pieno) * 100) if pieno else None
 
     etich = chip(BRAND["etichetta"], f("etichetta", 40), BRAND["giallo"], BRAND["testo_scuro"])
     t_titolo = titolo_img(p["titolo"], f("titolo", 60), W - 160)
-    t_vecchio = testo_brillante(formatta(p["prezzo_originale"]), f("prezzo_vecchio", 70), (215, 205, 190), spessore=3)
+    t_vecchio = testo_brillante(formatta(pieno), f("prezzo_vecchio", 70), (215, 205, 190), spessore=3) if pieno else None
     t_nuovo = testo_brillante(formatta(p["prezzo_scontato"]), f("brand", 190), BRAND["giallo"], spessore=8,
                               bagliore=BRAND["arancio"])
     t_sotto = testo_brillante(BRAND["sotto_bottone"], f("testo", 38), (255, 255, 255), spessore=2)
@@ -289,7 +294,7 @@ def crea_video(p, uscita="offerta.mp4"):
 
         # badge sconto
         pg = prog(t, 2.6, 0.6)
-        if pg > 0:
+        if pg > 0 and sconto:
             rb = badge.rotate((1 - ease_out(pg)) * 200 - 12, resample=Image.BICUBIC, expand=True)
             incolla(fr, rb, 860, 500 + g, ease_back(pg))
 
@@ -299,7 +304,7 @@ def crea_video(p, uscita="offerta.mp4"):
 
         # prezzo vecchio barrato
         pv = ease_out(prog(t, 1.7, 0.4))
-        if pv > 0:
+        if pv > 0 and t_vecchio is not None:
             incolla(fr, t_vecchio, W / 2, 1420, 1.0, pv)
             pl = ease_out(prog(t, 2.0, 0.35))
             if pl > 0:
