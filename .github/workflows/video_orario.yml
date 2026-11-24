@@ -1,9 +1,9 @@
-name: Video offerta ogni ora
+name: Video offerta
 
 on:
-  schedule:
-    - cron: "17 * * * *"   # ogni ora al minuto 17 (orario UTC)
-  workflow_dispatch:        # pulsante "Run workflow" per provarlo a mano
+  repository_dispatch:
+    types: [offerta]       # parte quando il bot su Cloudflare riceve un'offerta con la riga "video"
+  workflow_dispatch:        # pulsante "Run workflow" per provarlo a mano (usa offerte.json)
 
 jobs:
   video:
@@ -23,10 +23,10 @@ jobs:
           curl -sSL --retry 3 -o inter.zip https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip || true
           unzip -q -o inter.zip -d /tmp/inter 2>/dev/null || true
           find /tmp/inter -name "Inter-*.otf" -exec cp {} fonts/ \; 2>/dev/null || true
-          ls fonts
 
       - name: Crea e invia il video
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
+          OFFERTA: ${{ toJSON(github.event.client_payload) }}
         run: python invia_video.py
